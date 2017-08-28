@@ -76,6 +76,10 @@ function appendMessage(container, chanId, chanType, msg) {
 }
 
 function buildChatMessage(chanId, msg) {
+	if (utils.lastMessageId < msg.id) {
+		utils.lastMessageId = msg.id;
+	}
+
 	const type = msg.type;
 	let target = "#chan-" + chanId;
 	if (type === "error") {
