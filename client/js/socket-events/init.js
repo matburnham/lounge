@@ -12,11 +12,11 @@ socket.on("init", function(data) {
 	$("#loading-page-message, #connection-error").text("Rendering…");
 
 	const lastMessageId = utils.lastMessageId;
+	let previousActive = 0;
 
-	// TODO: this is hacky
 	if (lastMessageId > -1) {
+		previousActive = sidebar.find(".active").data("id");
 		sidebar.find(".networks").empty();
-		$("#chat").empty();
 	}
 
 	if (data.networks.length === 0) {
@@ -45,18 +45,33 @@ socket.on("init", function(data) {
 		$("#sign-in").remove();
 	}
 
-	const id = data.active;
-	const target = sidebar.find("[data-id='" + id + "']").trigger("click", {
-		replaceHistory: true
-	});
-	if (target.length === 0) {
-		const first = sidebar.find(".chan")
-			.eq(0)
-			.trigger("click");
-		if (first.length === 0) {
-			$("#footer").find(".connect").trigger("click", {
-				pushState: false,
-			});
+	let target;
+
+	// Open last active channel
+	if (previousActive > 0) {
+		target = sidebar.find("[data-id='" + previousActive + "']").trigger("click", {
+			replaceHistory: true
+		});
+	}
+
+	// Otherwise open last active channel according to the server
+	if (!previousActive || target.length === 0) {
+		target = sidebar.find("[data-id='" + data.active + "']").trigger("click", {
+			replaceHistory: true
+		});
+
+		// Otherwise open first channel in the sidebar
+		if (target.length === 0) {
+			target = sidebar.find(".chan")
+				.eq(0)
+				.trigger("click");
+
+			// Otherwise open the connect window
+			if (target.length === 0) {
+				$("#footer").find(".connect").trigger("click", {
+					pushState: false
+				});
+			}
 		}
 	}
 });
