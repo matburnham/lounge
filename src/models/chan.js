@@ -25,7 +25,7 @@ function Chan(attr) {
 		type: Chan.Type.CHANNEL,
 		firstUnread: 0,
 		unread: 0,
-		highlight: false,
+		highlight: 0,
 		users: []
 	});
 }
@@ -73,7 +73,7 @@ Chan.prototype.pushMessage = function(client, msg, increasesUnread) {
 		}
 
 		if (msg.highlight) {
-			this.highlight = true;
+			this.highlight++;
 		}
 	}
 };

@@ -106,20 +106,22 @@ module.exports = function(irc, network) {
 
 		// Do not send notifications for messages older than 15 minutes (znc buffer for example)
 		if (highlight && (!data.time || data.time > Date.now() - 900000)) {
-			let title = data.nick;
+			let title;
+			let body = Helper.cleanIrcMessage(data.message);
 
-			if (chan.type !== Chan.Type.QUERY) {
-				title += ` (${chan.name}) mentioned you`;
+			if (chan.type === Chan.Type.QUERY) {
+				title = `${data.nick} (${chan.highlight} new message${chan.highlight > 1 ? "s" : ""})`;
 			} else {
-				title += " sent you a message";
+				title = `${chan.name} (${chan.highlight} mention${chan.highlight > 1 ? "s" : ""})`;
+				body = `${data.nick} says: ${body}`;
 			}
 
 			client.manager.webPush.push(client, {
 				type: "notification",
 				chanId: chan.id,
 				timestamp: data.time || Date.now(),
-				title: `The Lounge: ${title}`,
-				body: Helper.cleanIrcMessage(data.message)
+				title: title,
+				body: body
 			}, true);
 		}
 	}
