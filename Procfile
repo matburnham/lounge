@@ -1,1 +1,1 @@
-web: node index --private --home /app
+web: node index --home /app
